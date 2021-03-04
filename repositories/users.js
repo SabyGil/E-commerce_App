@@ -1,4 +1,5 @@
 const fs = require('fs');
+const crypto = require('crypto');
 class UsersRepository {
   constructor(filename) {
     if (!filename) {
@@ -22,11 +23,24 @@ class UsersRepository {
   }
 
   async create(attrs) {
+    attrs.id = this.randomId();
     // obj that will potentially have an email or pass key val pair
     const records = await this.getAll();
     records.push(attrs);
     // write the updated 'records'
-    await fs.promises.writeFile(this.filename, JSON.stringify(records));
+    await this.writeAll(records);
+  }
+
+  async writeAll(records) {
+    await fs.promises.writeFile(
+      this.filename,
+      JSON.stringify(records, null, 2)
+      // 2 changes the level of indentation of the string. w/ every level of nesting, 2 spaces are printed
+    );
+  }
+
+  randomId() {
+    return crypto.randomBytes(4).toString('hex');
   }
 }
 
