@@ -42,20 +42,32 @@ class UsersRepository {
   randomId() {
     return crypto.randomBytes(4).toString('hex');
   }
+
+  async getOne(id) {
+    const records = await this.getAll();
+    return records.find((record) => record.id === id);
+  }
+
+  async delete(id) {
+    const records = await this.getAll();
+    const filteredRecords = records.filter((record) => record.id !== id);
+    // take filteredRecords & save them back on to HDD by passing it to writeAll function
+    await this.writeAll(filteredRecords);
+  }
 }
 
 /*
     1. You are not allowed to have async code inside a constructor, why not?
     2. what does accessSync do?
-    3. 
+    3. why is the filename called getAll?
+    4. what is the "attrs" param in the create function supposed to be?
 
     sync seems to makes the code stop & wait for a function to complete
 */
 const test = async () => {
   const repo = new UsersRepository('users.json');
-  await repo.create({ email: 'test@test.com', password: 'password' });
-  const users = await repo.getAll();
-  console.log(users);
+
+  await repo.delete('b4925e69');
 };
 
 test();
