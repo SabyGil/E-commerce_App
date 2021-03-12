@@ -54,6 +54,39 @@ class UsersRepository {
     // take filteredRecords & save them back on to HDD by passing it to writeAll function
     await this.writeAll(filteredRecords);
   }
+
+  async update(id, attrs) {
+    const records = await this.getAll();
+    const record = records.find((record) => record.id === id);
+
+    if (!record) {
+      throw new Error(`Record with id ${id} not found`);
+    }
+    // obj.assign makes a copy of an object
+    // so if the atts obj equals { email: "t@test.com"}
+    // record will now also equal that
+    Object.assign(record, attrs);
+    await this.writeAll(records);
+  }
+
+  // getOneBy - used to get any record w/ any set of properties
+
+  async getOneBy(filters) {
+    const records = await this.getAll();
+    for (let record of records) {
+      let found = true;
+
+      for (let key in filters) {
+        if (record[key] !== filters[key]) {
+          found = false;
+        }
+      }
+      if (found) {
+        // equivalent to "found === true"
+        return record;
+      }
+    }
+  }
 }
 
 /*
@@ -67,7 +100,12 @@ class UsersRepository {
 const test = async () => {
   const repo = new UsersRepository('users.json');
 
-  await repo.delete('b4925e69');
+  // await repo.delete('b4925e69');
+  // to create a user
+  // await repo.create({ email: 'test@test.com' });
+  // await repo.update('3d3806d3', { password: 'mypassword' });
+  const user = await repo.getOneBy({ email: 'test@test.com' });
+  console.log(user);
 };
 
 test();
