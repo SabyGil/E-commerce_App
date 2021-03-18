@@ -97,15 +97,15 @@ class UsersRepository {
 
     sync seems to makes the code stop & wait for a function to complete
 */
-const test = async () => {
-  const repo = new UsersRepository('users.json');
 
-  // await repo.delete('b4925e69');
-  // to create a user
-  // await repo.create({ email: 'test@test.com' });
-  // await repo.update('3d3806d3', { password: 'mypassword' });
-  const user = await repo.getOneBy({ email: 'test@test.com' });
-  console.log(user);
-};
+module.exports = new UsersRepository('users.json');
 
-test();
+// instantiate here so that you don't have to do it elsewhere
+
+/*
+ex.
+const repo = require('./users);
+repo.getAll();
+
+*this works in this case b/c we only ever need one instance of UsersRepository
+*/

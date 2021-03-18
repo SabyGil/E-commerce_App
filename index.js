@@ -1,6 +1,7 @@
 const express = require('express'); // importing the library
 //   ^ require in the express library.
 const bodyParser = require('body-parser');
+const usersRepo = require('./repositories/users');
 const app = express();
 
 // makes it so every route handler inside the app will be body parsed
@@ -55,8 +56,19 @@ const bodyParser = (req, res, next) => {
 };
 */
 
-app.post('/', (req, res) => {
-  console.log(req.body);
+app.post('/', async (req, res) => {
+  const { email, password, passwordConfirmation } = req.body;
+
+  const existingUser = await usersRepo.getOneBy({ email });
+
+  if (existingUser) {
+    return res.send('Email in use');
+  }
+
+  if (password !== passwordConfirmation) {
+    return res.send('Passwords must match');
+  }
+
   res.send('Account created!!!');
 });
 
